@@ -8,12 +8,45 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid()) // esse @id quer dizer que é a chave primaria, e o resto vai gerar um id automatica unico
-  username String @unique
-  name     String
-
+  id         String   @id @default(uuid()) // esse @id quer dizer que é a chave primaria, e o resto vai gerar um id automatica unico
+  username   String   @unique
+  name       String
+  email      String?  @unique
+  avatar_url String?
   created_at DateTime @default(now()) // vai preencher com o valor atual da hora
+
+  accounts Account[]
+  sessions Session[]
 
   @@map("users") // aqui nos colocamos o nome da tabela
 }
-   
+
+model Account {
+  id                  String  @id @default(cuid())
+  user_id             String
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_account_id])
+  @@map("accounts")
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  session_token String   @unique
+  user_id       String
+  expires       DateTime
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
