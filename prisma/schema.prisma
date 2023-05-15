@@ -21,7 +21,7 @@ model User {
   @@map("users") // aqui nos colocamos o nome da tabela
 }
 
-model Account {
+model Account { // é a relação entre as diferentes contas que o usuario pode logar, google, facebook, github
   id                  String  @id @default(cuid())
   user_id             String
   type                String
@@ -41,7 +41,7 @@ model Account {
   @@map("accounts")
 }
 
-model Session {
+model Session { // aqui são os diferentes dispositivos
   id            String   @id @default(cuid())
   session_token String   @unique
   user_id       String
