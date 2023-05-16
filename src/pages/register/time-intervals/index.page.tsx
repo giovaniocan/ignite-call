@@ -7,7 +7,6 @@ import {
   TextInput,
 } from '@ignite-ui/react'
 
-import { z } from 'zod'
 import { Container, Header } from '../styles'
 import {
   IntervalBox,
@@ -16,19 +15,12 @@ import {
   IntervalItem,
   IntervalsContainer,
 } from './styles'
-import { ArrowRight, Check } from 'phosphor-react'
+import { ArrowRight } from 'phosphor-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { getWeekDays } from '@/utils/getWeekdays'
 
-const timeIntervalsFormSchema = z.object({})
-
 export default function TimeIntervals() {
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-  } = useForm({
+  const { register, control, handleSubmit } = useForm({
     defaultValues: {
       intervals: [
         {
