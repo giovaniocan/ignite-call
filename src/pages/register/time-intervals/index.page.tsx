@@ -7,6 +7,7 @@ import {
   TextInput,
 } from '@ignite-ui/react'
 
+import { z } from 'zod'
 import { Container, Header } from '../styles'
 import {
   IntervalBox,
@@ -15,9 +16,76 @@ import {
   IntervalItem,
   IntervalsContainer,
 } from './styles'
-import { ArrowRight } from 'phosphor-react'
+import { ArrowRight, Check } from 'phosphor-react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { getWeekDays } from '@/utils/getWeekdays'
+
+const timeIntervalsFormSchema = z.object({})
 
 export default function TimeIntervals() {
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm({
+    defaultValues: {
+      intervals: [
+        {
+          weekDays: 0,
+          enable: false,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        {
+          weekDays: 1,
+          enable: true,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        {
+          weekDays: 2,
+          enable: true,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        {
+          weekDays: 3,
+          enable: true,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        {
+          weekDays: 4,
+          enable: true,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        {
+          weekDays: 5,
+          enable: true,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+        {
+          weekDays: 6,
+          enable: false,
+          startTime: '08:00',
+          endTime: '18:00',
+        },
+      ],
+    },
+  })
+
+  const weekDays = getWeekDays()
+
+  const { fields } = useFieldArray({
+    control, // control do useForm para saber que te lidando com aquele formulario
+    name: 'intervals', // nome do campo
+  })
+
+  async function handleSetTimeIntervals() {}
+
   return (
     <Container>
       <Header>
@@ -30,28 +98,45 @@ export default function TimeIntervals() {
         <MultiStep size={4} currentStep={3} />
       </Header>
 
-      <IntervalBox as="form">
+      <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
         <IntervalsContainer>
-          <IntervalItem>
-            <IntervalDay>
-              <Checkbox />
-              <Text>Segunda-feira</Text>
-            </IntervalDay>
-            <IntervalInputs>
-              <TextInput size="sm" type="time" step={60} />
-              <TextInput size="sm" type="time" step={60} />
-            </IntervalInputs>
-          </IntervalItem>
-          <IntervalItem>
-            <IntervalDay>
-              <Checkbox />
-              <Text>Terça-feira</Text>
-            </IntervalDay>
-            <IntervalInputs>
-              <TextInput size="sm" type="time" step={60} />
-              <TextInput size="sm" type="time" step={60} />
-            </IntervalInputs>
-          </IntervalItem>
+          {fields.map((field, index) => {
+            return (
+              <IntervalItem key={field.id}>
+                <IntervalDay>
+                  <Controller // esse controller é para saber se o checkbox esta ativo ou nao, quando o eleemento do jook form não é nativo do html
+                    name={`intervals.${index}.enable`}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <Checkbox
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked === true)
+                          }}
+                          checked={field.value} // ajuda a recuperar o valor original
+                        />
+                      )
+                    }}
+                  />
+                  <Text>{weekDays[field.weekDays]}</Text>
+                </IntervalDay>
+                <IntervalInputs>
+                  <TextInput
+                    size="sm"
+                    type="time"
+                    step={60}
+                    {...register(`intervals.${index}.startTime`)}
+                  />
+                  <TextInput
+                    size="sm"
+                    type="time"
+                    step={60}
+                    {...register(`intervals.${index}.endTime`)}
+                  />
+                </IntervalInputs>
+              </IntervalItem>
+            )
+          })}
         </IntervalsContainer>
         <Button type="submit">
           Próximo passo
