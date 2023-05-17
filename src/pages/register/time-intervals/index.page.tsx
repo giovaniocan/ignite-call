@@ -21,6 +21,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { getWeekDays } from '@/utils/getWeekdays'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ConvertTimeStringToMinutes } from '@/utils/convert-time-string-to-minutes'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -40,7 +41,16 @@ const timeIntervalsFormSchema = z.object({
     )
     .refine((intervals) => intervals.length > 0, {
       message: 'Você precisa selecionar pelo menos um dia da semana!',
-    }), // esse refine é o modo de validar o novo array, aqui estamos falando que se stiver vaio ele não vai mandar
+    }) // esse refine é o modo de validar o novo array, aqui estamos falando que se stiver vaio ele não vai mandar
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDays: interval.weekDays,
+          startTimeInMinutes: ConvertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: ConvertTimeStringToMinutes(interval.endTime),
+        }
+      })
+    }),
 })
 
 type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
