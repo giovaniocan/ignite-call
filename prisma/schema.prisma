@@ -15,13 +15,14 @@ model User {
   avatar_url String?
   created_at DateTime @default(now()) // vai preencher com o valor atual da hora
 
-  accounts Account[]
-  sessions Session[]
+  accounts     Account[]
+  sessions     Session[]
+  TimeInterval UserTimeInterval[]
 
   @@map("users") // aqui nos colocamos o nome da tabela
 }
 
-model Account { // é a relação entre as diferentes contas que o usuario pode logar, google, facebook, github
+model Account {
   id                  String  @id @default(cuid())
   user_id             String
   type                String
@@ -41,7 +42,7 @@ model Account { // é a relação entre as diferentes contas que o usuario pode 
   @@map("accounts")
 }
 
-model Session { // aqui são os diferentes dispositivos
+model Session {
   id            String   @id @default(cuid())
   session_token String   @unique
   user_id       String
@@ -49,4 +50,16 @@ model Session { // aqui são os diferentes dispositivos
   user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model UserTimeInterval {
+  id                    String @id @default(uuid())
+  week_day              Int
+  time_start_in_minutes Int
+  time_end_in_minutes   Int
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+
+  @@map("user_time_intervals")
 }

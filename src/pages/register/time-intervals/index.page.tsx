@@ -22,6 +22,7 @@ import { getWeekDays } from '@/utils/getWeekdays'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ConvertTimeStringToMinutes } from '@/utils/convert-time-string-to-minutes'
+import { api } from '@/lib/axios'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -135,8 +136,8 @@ export default function TimeIntervals() {
   const interval = watch('intervals') // ele fica observando os campos que mudaram de todo o form( pq o nome é intervals)
 
   async function handleSetTimeIntervals(data: any) {
-    const formData = data as TimeIntervalsFormOutput
-    console.log(formData)
+    const { intervals } = data as TimeIntervalsFormOutput
+    await api.post('/users/time-intervals', intervals)
   }
 
   return (
