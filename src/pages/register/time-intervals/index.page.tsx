@@ -45,7 +45,13 @@ const timeIntervalsFormSchema = z.object({
 type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
-  const { register, control, watch, handleSubmit } = useForm({
+  const {
+    register,
+    control,
+    watch,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -163,7 +169,7 @@ export default function TimeIntervals() {
             )
           })}
         </IntervalsContainer>
-        <Button type="submit">
+        <Button type="submit" disabled={isSubmitting}>
           Próximo passo
           <ArrowRight />
         </Button>
