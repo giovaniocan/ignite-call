@@ -50,10 +50,23 @@ const timeIntervalsFormSchema = z.object({
           endTimeInMinutes: ConvertTimeStringToMinutes(interval.endTime),
         }
       })
-    }),
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes, // tem que estar uma hora de diferença
+        ) // esse every aplicada a condição para todas as posições do array
+      },
+      {
+        message:
+          'A hora de término precisa ser pelo menos uma hora depois do inicio',
+      },
+    ),
 })
 
-type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema> // dados de entrada
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema> // dados de saida
 
 export default function TimeIntervals() {
   const {
@@ -62,7 +75,7 @@ export default function TimeIntervals() {
     watch,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm({
+  } = useForm<TimeIntervalsFormInput>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -121,8 +134,9 @@ export default function TimeIntervals() {
 
   const interval = watch('intervals') // ele fica observando os campos que mudaram de todo o form( pq o nome é intervals)
 
-  async function handleSetTimeIntervals(data: TimeIntervalsFormData) {
-    console.log(data)
+  async function handleSetTimeIntervals(data: any) {
+    const formData = data as TimeIntervalsFormOutput
+    console.log(formData)
   }
 
   return (
