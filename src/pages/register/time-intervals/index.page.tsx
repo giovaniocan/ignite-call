@@ -9,6 +9,7 @@ import {
 
 import { Container, Header } from '../styles'
 import {
+  FormError,
   IntervalBox,
   IntervalDay,
   IntervalInputs,
@@ -50,7 +51,7 @@ export default function TimeIntervals() {
     control,
     watch,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
@@ -169,6 +170,9 @@ export default function TimeIntervals() {
             )
           })}
         </IntervalsContainer>
+        {errors.intervals && (
+          <FormError size="sm">{errors.intervals.message}</FormError>
+        )}
         <Button type="submit" disabled={isSubmitting}>
           Próximo passo
           <ArrowRight />
