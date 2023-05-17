@@ -18,9 +18,35 @@ import {
 import { ArrowRight } from 'phosphor-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { getWeekDays } from '@/utils/getWeekdays'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const timeIntervalsFormSchema = z.object({
+  intervals: z
+    .array(
+      z.object({
+        weekDays: z.number().min(0).max(6),
+        enable: z.boolean(),
+        startTime: z.string(),
+        endTime: z.string(),
+      }),
+    )
+    .length(7) // especificar o tamanho, mas não é necessarios
+    .transform(
+      (
+        intervals, // pegando o array original
+      ) => intervals.filter((interval) => interval.enable), // to filtrando um novo array, onde so tem dias que esta marcado
+    )
+    .refine((intervals) => intervals.length > 0, {
+      message: 'Você precisa selecionar pelo menos um dia da semana!',
+    }), // esse refine é o modo de validar o novo array, aqui estamos falando que se stiver vaio ele não vai mandar
+})
+
+type TimeIntervalsFormData = z.infer<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
   const { register, control, watch, handleSubmit } = useForm({
+    resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
         {
@@ -78,7 +104,9 @@ export default function TimeIntervals() {
 
   const interval = watch('intervals') // ele fica observando os campos que mudaram de todo o form( pq o nome é intervals)
 
-  async function handleSetTimeIntervals() {}
+  async function handleSetTimeIntervals(data: TimeIntervalsFormData) {
+    console.log(data)
+  }
 
   return (
     <Container>
