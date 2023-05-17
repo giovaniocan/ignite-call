@@ -20,7 +20,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { getWeekDays } from '@/utils/getWeekdays'
 
 export default function TimeIntervals() {
-  const { register, control, handleSubmit } = useForm({
+  const { register, control, watch, handleSubmit } = useForm({
     defaultValues: {
       intervals: [
         {
@@ -76,6 +76,8 @@ export default function TimeIntervals() {
     name: 'intervals', // nome do campo
   })
 
+  const interval = watch('intervals') // ele fica observando os campos que mudaram de todo o form( pq o nome é intervals)
+
   async function handleSetTimeIntervals() {}
 
   return (
@@ -98,8 +100,9 @@ export default function TimeIntervals() {
                 <IntervalDay>
                   <Controller // esse controller é para saber se o checkbox esta ativo ou nao, quando o eleemento do jook form não é nativo do html
                     name={`intervals.${index}.enable`}
-                    control={control}
+                    control={control} // aqui que controla os valores
                     render={({ field }) => {
+                      // ela que renderiza o componente
                       return (
                         <Checkbox
                           onCheckedChange={(checked) => {
@@ -117,12 +120,14 @@ export default function TimeIntervals() {
                     size="sm"
                     type="time"
                     step={60}
+                    disabled={interval[index].enable === false}
                     {...register(`intervals.${index}.startTime`)}
                   />
                   <TextInput
                     size="sm"
                     type="time"
                     step={60}
+                    disabled={interval[index].enable === false}
                     {...register(`intervals.${index}.endTime`)}
                   />
                 </IntervalInputs>
