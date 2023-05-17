@@ -28,7 +28,7 @@ const timeIntervalsFormSchema = z.object({
   intervals: z
     .array(
       z.object({
-        weekDays: z.number().min(0).max(6),
+        weekDay: z.number().min(0).max(6),
         enable: z.boolean(),
         startTime: z.string(),
         endTime: z.string(),
@@ -46,7 +46,7 @@ const timeIntervalsFormSchema = z.object({
     .transform((intervals) => {
       return intervals.map((interval) => {
         return {
-          weekDays: interval.weekDays,
+          weekDay: interval.weekDay,
           startTimeInMinutes: ConvertTimeStringToMinutes(interval.startTime),
           endTimeInMinutes: ConvertTimeStringToMinutes(interval.endTime),
         }
@@ -81,43 +81,43 @@ export default function TimeIntervals() {
     defaultValues: {
       intervals: [
         {
-          weekDays: 0,
+          weekDay: 0,
           enable: false,
           startTime: '08:00',
           endTime: '18:00',
         },
         {
-          weekDays: 1,
+          weekDay: 1,
           enable: true,
           startTime: '08:00',
           endTime: '18:00',
         },
         {
-          weekDays: 2,
+          weekDay: 2,
           enable: true,
           startTime: '08:00',
           endTime: '18:00',
         },
         {
-          weekDays: 3,
+          weekDay: 3,
           enable: true,
           startTime: '08:00',
           endTime: '18:00',
         },
         {
-          weekDays: 4,
+          weekDay: 4,
           enable: true,
           startTime: '08:00',
           endTime: '18:00',
         },
         {
-          weekDays: 5,
+          weekDay: 5,
           enable: true,
           startTime: '08:00',
           endTime: '18:00',
         },
         {
-          weekDays: 6,
+          weekDay: 6,
           enable: false,
           startTime: '08:00',
           endTime: '18:00',
@@ -137,7 +137,7 @@ export default function TimeIntervals() {
 
   async function handleSetTimeIntervals(data: any) {
     const { intervals } = data as TimeIntervalsFormOutput
-    await api.post('/users/time-intervals', intervals)
+    await api.post('/users/time-intervals', { intervals })
   }
 
   return (
@@ -173,7 +173,7 @@ export default function TimeIntervals() {
                       )
                     }}
                   />
-                  <Text>{weekDays[field.weekDays]}</Text>
+                  <Text>{weekDays[field.weekDay]}</Text>
                 </IntervalDay>
                 <IntervalInputs>
                   <TextInput
