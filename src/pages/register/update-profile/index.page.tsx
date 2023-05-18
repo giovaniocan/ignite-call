@@ -1,4 +1,11 @@
-import { Button, Heading, MultiStep, Text, TextArea } from '@ignite-ui/react'
+import {
+  Avatar,
+  Button,
+  Heading,
+  MultiStep,
+  Text,
+  TextArea,
+} from '@ignite-ui/react'
 import { ArrowRight } from 'phosphor-react'
 
 import { useForm } from 'react-hook-form'
@@ -28,6 +35,7 @@ export default function UpdateProfile() {
 
   const session = useSession()
   console.log(session)
+  console.log(session.data?.user.avatar_url)
 
   async function handleUdpdateProfile(data: UptadeProfileFormData) {}
 
@@ -46,6 +54,10 @@ export default function UpdateProfile() {
       <ProfileBox as="form" onSubmit={handleSubmit(handleUdpdateProfile)}>
         <label>
           <Text size="sm">Foto de perfil</Text>
+          <Avatar
+            src={session.data?.user.avatar_url}
+            alt={session.data?.user.name}
+          />
         </label>
 
         <label>
