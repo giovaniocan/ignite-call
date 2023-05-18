@@ -17,6 +17,7 @@ import { useSession } from 'next-auth/react'
 import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
+import { api } from '@/lib/axios'
 
 const updtadeProfileSchema = z.object({
   bio: z.string(),
@@ -37,7 +38,11 @@ export default function UpdateProfile() {
   console.log(session)
   console.log(session.data?.user.avatar_url)
 
-  async function handleUdpdateProfile(data: UptadeProfileFormData) {}
+  async function handleUdpdateProfile(data: UptadeProfileFormData) {
+    await api.put('/users/profile', {
+      bio: data.bio,
+    })
+  }
 
   return (
     <Container>
@@ -48,7 +53,7 @@ export default function UpdateProfile() {
           editar essas informações depois.
         </Text>
 
-        <MultiStep size={4} currentStep={1} />
+        <MultiStep size={4} currentStep={4} />
       </Header>
 
       <ProfileBox as="form" onSubmit={handleSubmit(handleUdpdateProfile)}>
