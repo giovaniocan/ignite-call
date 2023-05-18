@@ -11,6 +11,7 @@ model User {
   id         String   @id @default(uuid()) // esse @id quer dizer que é a chave primaria, e o resto vai gerar um id automatica unico
   username   String   @unique
   name       String
+  bio        String?
   email      String?  @unique
   avatar_url String?
   created_at DateTime @default(now()) // vai preencher com o valor atual da hora
