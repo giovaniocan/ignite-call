@@ -18,6 +18,7 @@ import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
 import { api } from '@/lib/axios'
+import { useRouter } from 'next/router'
 
 const updtadeProfileSchema = z.object({
   bio: z.string(),
@@ -35,13 +36,14 @@ export default function UpdateProfile() {
   })
 
   const session = useSession()
-  console.log(session)
-  console.log(session.data?.user.avatar_url)
+  const router = useRouter()
 
   async function handleUdpdateProfile(data: UptadeProfileFormData) {
     await api.put('/users/profile', {
       bio: data.bio,
     })
+
+    router.push(`/schedule/${session.data?.user.username}`)
   }
 
   return (
