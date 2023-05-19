@@ -1,4 +1,8 @@
-export function getWeekDays() {
+interface getWeekDaysParams {
+  short?: boolean
+}
+
+export function getWeekDays({ short = false }: getWeekDaysParams = {}) {
   const formatter = new Intl.DateTimeFormat('pt-BR', {
     weekday: 'long',
   })
@@ -6,6 +10,9 @@ export function getWeekDays() {
   return Array.from(Array(7).keys()) // 7 posições
     .map((day) => formatter.format(new Date(Date.UTC(2021, 5, day)))) // aqui é para pegar a data de acordo com a posição do array( dia da semana)
     .map((weekDay) => {
+      if (short) {
+        return weekDay.substring(0, 3).toUpperCase()
+      }
       return weekDay.substring(0, 1).toUpperCase().concat(weekDay.substring(1)) // isso é para deixar a primeira letra da string maiuscula
     })
 }
