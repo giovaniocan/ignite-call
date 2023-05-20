@@ -83,7 +83,7 @@ export function Calendar() {
       ...daysInMonthArray.map((date) => {
         return {
           date,
-          disabled: false,
+          disabled: date.endOf('day').isBefore(new Date()),
         }
       }),
       ...nexMonthFillArray.map((date) => {
