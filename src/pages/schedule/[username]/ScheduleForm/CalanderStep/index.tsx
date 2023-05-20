@@ -8,7 +8,7 @@ import {
 } from './styles'
 
 export function CalanderStep() {
-  const isDateSelected = true
+  const isDateSelected = false
 
   return (
     <Container isTimePickerOpen={isDateSelected}>

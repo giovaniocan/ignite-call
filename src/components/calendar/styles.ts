@@ -15,6 +15,7 @@ export const CalendarHeader = styled('div', {
 
 export const CalendarTitle = styled(Text, {
   fontWeight: '$medium',
+  textTransform: 'capitalize', // para deixar a primeira letra maiuscula, assim como o capitalize do css, mas no styled-components ele já faz isso por padrão, então não precisa colocar o textTransform: 'capitalize'
 
   span: {
     color: '$gray200',
