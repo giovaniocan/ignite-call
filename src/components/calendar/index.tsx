@@ -10,12 +10,15 @@ import {
 import { getWeekDays } from '@/utils/getWeekdays'
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
+import { api } from '@/lib/axios'
+import { useQuery } from '@tanstack/react-query'
 
 interface CalendarWeek {
   week: number
   days: Array<{
     date: dayjs.Dayjs
-    disabled: boolean
+    disabled: boolean | undefined
   }>
 }
 
@@ -26,12 +29,18 @@ interface CalendarProps {
   onDateSelected: (date: Date) => void
 }
 
+interface BlockedDates {
+  blockedWeekDays: number[]
+}
+
 export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
   const shortWeekDays = getWeekDays({ short: true })
 
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1) // a data inicial é o 1 de cada mÊs
   })
+
+  const router = useRouter()
 
   function handlePreviousMonth() {
     const previusMonthDate = currentDate.subtract(1, 'month') // aqui a gente pega a data atual, e subtrai alguma coisa de alguma medida, aqui é 1 mÊs
@@ -47,6 +56,22 @@ export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
 
   const currentMonth = currentDate.format('MMMM') // é o mês por extenso
   const currentYear = currentDate.format('YYYY') // é o ano por extenso
+
+  const username = String(router.query.username)
+
+  const { data: blockedDates } = useQuery<BlockedDates>(
+    ['blocked-dates', currentDate.get('year'), currentDate.get('month')],
+    async () => {
+      const response = await api.get(`/users/${username}/blocked-dates`, {
+        params: {
+          year: currentDate.get('year'),
+          month: currentDate.get('month'),
+        },
+      })
+
+      return response.data
+    },
+  )
 
   // vamos usar o useMemo para ele guardar na memoria essa operação, pq so vai mudar uma vez no mês, então não compensa o processamento de cada renderização
   const calendarWeeks = useMemo(() => {
@@ -88,7 +113,9 @@ export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
       ...daysInMonthArray.map((date) => {
         return {
           date,
-          disabled: date.endOf('day').isBefore(new Date()),
+          disabled:
+            date.endOf('day').isBefore(new Date()) ||
+            blockedDates?.blockedWeekDays.includes(date.get('day')),
         }
       }),
       ...nexMonthFillArray.map((date) => {
@@ -115,7 +142,7 @@ export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
     )
 
     return calendarWeeks
-  }, [currentDate])
+  }, [currentDate, blockedDates])
 
   return (
     <CalendarContainer>
