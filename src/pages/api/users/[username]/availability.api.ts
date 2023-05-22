@@ -36,7 +36,7 @@ export default async function handle(
   const isPastDate = referenceDate.endOf('day').isBefore(new Date()) // para verificar se a data que mandou é antes da data atual, nos fizemos isso na front, porém não podemos depender de validação vinda do cliente side
 
   if (isPastDate) {
-    return res.status(400).json({ availability: [] }) // não existe disponobilidade nenhuma nesse dia, afinal, ele ja passou
+    return res.status(400).json({ possibleTimes: [], availableTimes: [] }) // não existe disponobilidade nenhuma nesse dia, afinal, ele ja passou
   }
 
   const userAvalability = await prisma.userTimeInterval.findFirst({
@@ -47,7 +47,7 @@ export default async function handle(
   }) // vai pegar o intervalo pré-definida, se ele colocou que na quinta ele estaria livre das 10 as 16 aqui nos vamos buscar isso, e como é semanal nos comparamos por fdia da semana
 
   if (!userAvalability) {
-    return res.status(400).json({ availability: [] })
+    return res.status(400).json({ possibleTimes: [], availableTimes: [] })
   }
 
   const { time_start_in_minutes, time_end_in_minutes } = userAvalability
