@@ -6,10 +6,11 @@ import {
   TimePickerItem,
   TimePickerList,
 } from './styles'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 import { api } from '@/lib/axios'
 import { useRouter } from 'next/router'
+import { useQuery } from '@tanstack/react-query'
 
 interface Availability {
   possibleTimes: number[]
@@ -18,7 +19,6 @@ interface Availability {
 
 export function CalanderStep() {
   const [selectedDate, setSeletedDate] = useState<Date | null>(null)
-  const [availability, setAvailabilty] = useState<Availability | null>(null)
 
   const router = useRouter()
   const username = String(router.query.username)
@@ -30,20 +30,25 @@ export function CalanderStep() {
     ? dayjs(selectedDate).format('DD [ de ] MMMM')
     : null
 
-  useEffect(() => {
-    if (!selectedDate) {
-      return
-    }
-    api
-      .get(`users/${username}/availability`, {
+  const selectedDateWithoutTime = selectedDate
+    ? dayjs(selectedDate).format('YYYY-MM-DD')
+    : null
+
+  const { data: availability } = useQuery<Availability>( // o query faz com que a aplicação tenha cache, então não fica dependendo tanto da internet, pq ja vai estar em cache
+    ['availability', selectedDateWithoutTime],
+    async () => {
+      const response = await api.get(`users/${username}/availability`, {
         params: {
-          date: dayjs(selectedDate).format('YYYY-MM-DD'),
+          date: selectedDateWithoutTime,
         },
       })
-      .then((response) => {
-        setAvailabilty(response.data)
-      })
-  }, [selectedDate, username])
+
+      return response.data
+    },
+    {
+      enabled: !!selectedDate, // aqui é a condição para o método ser executado
+    },
+  )
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
