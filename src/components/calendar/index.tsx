@@ -18,7 +18,7 @@ interface CalendarWeek {
   week: number
   days: Array<{
     date: dayjs.Dayjs
-    disabled: boolean | undefined
+    disabled: boolean
   }>
 }
 
@@ -31,6 +31,7 @@ interface CalendarProps {
 
 interface BlockedDates {
   blockedWeekDays: number[]
+  blockedDates: number[]
 }
 
 export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
@@ -65,7 +66,7 @@ export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
       const response = await api.get(`/users/${username}/blocked-dates`, {
         params: {
           year: currentDate.get('year'),
-          month: currentDate.get('month'),
+          month: String(currentDate.get('month') + 1).padStart(2, '0'),
         },
       })
 
@@ -75,6 +76,9 @@ export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
 
   // vamos usar o useMemo para ele guardar na memoria essa operação, pq so vai mudar uma vez no mês, então não compensa o processamento de cada renderização
   const calendarWeeks = useMemo(() => {
+    if (!blockedDates) {
+      return []
+    }
     const daysInMonthArray = Array.from({
       length: currentDate.daysInMonth(), // quantidade de dias no mês
     }).map((_, i) => {
@@ -115,7 +119,8 @@ export function Calendar({ onDateSelected, selectedDate }: CalendarProps) {
           date,
           disabled:
             date.endOf('day').isBefore(new Date()) ||
-            blockedDates?.blockedWeekDays.includes(date.get('day')),
+            blockedDates.blockedWeekDays.includes(date.get('day')) ||
+            blockedDates.blockedDates.includes(date.get('date')),
         }
       }),
       ...nexMonthFillArray.map((date) => {
