@@ -79,9 +79,7 @@ export default async function handle(
     const isTimeBlocked = blockedTimes.some(
       (blockedTime) => blockedTime.date.getHours() === time,
     )
-
     const isTimeInPast = referenceDate.set('hour', time).isBefore(new Date())
-
     return !isTimeBlocked && !isTimeInPast
   })
 
